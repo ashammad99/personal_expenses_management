@@ -37,6 +37,31 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
             <!-- Navbar Search -->
+            <li class="nav-item dropdown user-menu">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    <img src="../../dist/img/user2-160x160.jpg" class="user-image img-circle elevation-2" alt="User Image">
+                    <span class="d-none d-md-inline">{{\Illuminate\Support\Facades\Auth::user()->name}}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <!-- User image -->
+                    <li class="user-header bg-primary">
+                        <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+
+                        <p>
+                            {{\Illuminate\Support\Facades\Auth::user()->name}}
+                            <small>Member since {{\Illuminate\Support\Carbon::parse(Auth::user()->created_at)->format('F - Y')}}</small>
+                        </p>
+                    </li>
+                    <!-- Menu Footer-->
+                    <li class="user-footer">
+                        <a href="#" class="btn btn-default btn-flat">Profile</a>
+                        <a href="{{ route('logout') }}"  class="btn btn-default btn-flat float-right" onclick="event.preventDefault(); document.getElementById('logout').submit();">Logout</a>
+                        <form action="{{ route('logout') }}" method="post" style="display: none;" id="logout">
+                            @csrf
+                        </form>
+                    </li>
+                </ul>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" data-widget="navbar-search" href="#" role="button">
                     <i class="fas fa-search"></i>
@@ -143,6 +168,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
                 </div>
             </li>
+
+
+
             <li class="nav-item">
                 <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                     <i class="fas fa-expand-arrows-alt"></i>
@@ -160,7 +188,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <a href="index3.html" class="brand-link">
+        <a href="{{route('dashboard')}}" class="brand-link">
             <img src="{{asset('dist/img/AdminLTELogo.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
             <span class="brand-text font-weight-light">Personal Expenses</span>
         </a>
@@ -175,15 +203,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="info">
                     <a href="#" class="d-block">{{\Illuminate\Support\Facades\Auth::user()->name}}</a>
                 </div>
-
             </div>
-            <div class="user-panel mt-3 pb-3 mb-3">
-                <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout').submit();">Logout</a>
-                <form action="{{ route('logout') }}" method="post" style="display: none;" id="logout">
-                    @csrf
-                </form>
-            </div>
-
             <!-- Sidebar Menu -->
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -197,14 +217,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="pages/tables/simple.html" class="nav-link">
+                                <a href="{{route('expenses.create')}}" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>All Expenses</p>
+                                    <p>Create Expenses</p>
                                 </a>
                             </li>
-                        </ul>
-                    </li>
+                            <li class="nav-item">
+                                <a href="{{route('expenses.index')}}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Expenses Summary</p>
+                                </a>
+                            </li>
 
+                        </ul>
+
+                    </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-list-alt"></i> <!-- Categories Management -->
@@ -255,12 +282,27 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="pages/tables/simple.html" class="nav-link">
+                                <a href="{{route('statistics.dailyAverage')}}" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>All Expenses</p>
+                                    <p>Average Daily</p>
                                 </a>
                             </li>
                         </ul>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{route('statistics.categoryTotals')}}" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Total by Category</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('statistics.daily') }}" class="nav-link">
+                                    <i class="nav-icon fas fa-chart-line"></i>
+                                    <p>Daily Expenses Chart</p>
+                                </a>
+                            </li>
+                        </ul>
+
                     </li>
 
                     <li class="nav-item">
@@ -275,7 +317,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <li class="nav-item">
                                 <a href="pages/tables/simple.html" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>All Expenses</p>
+                                    <p>Profile</p>
                                 </a>
                             </li>
                         </ul>
@@ -360,5 +402,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="{{asset('plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 <!-- AdminLTE App -->
 <script src="{{asset('dist/js/adminlte.min.js')}}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@yield('JS_content')
 </body>
 </html>

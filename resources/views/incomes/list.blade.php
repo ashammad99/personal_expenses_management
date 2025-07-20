@@ -36,7 +36,8 @@
                         <tr>
                             <th>Income Amount</th>
                             <th>Month</th>
-                            <th>Edit</th>
+                            <th>Show Expenses For This Month</th>
+{{--                            <th>Edit</th>--}}
                         </tr>
                         </thead>
                         <tbody>
@@ -44,7 +45,8 @@
                             <tr>
                                 <td>{{$income->income}}$</td>
                                 <td>{{$income->month}}</td>
-                                <td><a href="{{route('incomes.edit',$income->id)}}">Edit</a></td>
+                                <td><a href="{{route('incomes.expenses',$income->id)}}">Show Expenses</a></td>
+{{--{{-                               <td><a href="{{route('incomes.edit',$income->id)}}">Edit</a></td>--}}
                             </tr>
                         @endforeach
                         </tbody>

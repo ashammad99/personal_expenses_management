@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use \App\Http\Controllers\IncomeController;
+use \App\Http\Controllers\ExpenseController;
+use \App\Http\Controllers\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,9 +19,7 @@ use \App\Http\Controllers\IncomeController;
 */
 
 
-Route::get('/', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/', [DashboardController::class,'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -43,7 +44,28 @@ Route::middleware(['auth', 'verified'])->name('incomes.')->prefix('incomes')->gr
     Route::get('/edit/{income}', [IncomeController::class, 'edit'])->name('edit');
     Route::put('/update/{income}', [IncomeController::class, 'update'])->name('update');
     Route::delete('/destroy/{income}', [IncomeController::class, 'destroy'])->name('destroy');
+    Route::get('/{income}/expenses', [IncomeController::class, 'showExpensesForMonth'])->name('expenses');
 });
 
+Route::middleware(['auth', 'verified'])->name('expenses.')->prefix('expenses')->group(function () {
+    Route::get('/', [ExpenseController::class, 'index'])->name('index');
+    Route::get('/show', [ExpenseController::class, 'show'])->name('show');
+    Route::get('/create', [ExpenseController::class, 'create'])->name('create');
+    Route::post('/store', [ExpenseController::class, 'store'])->name('store');
+    Route::get('/edit/{expense}', [ExpenseController::class, 'edit'])->name('edit');
+    Route::put('/update/{expense}', [ExpenseController::class, 'update'])->name('update');
+    Route::delete('/destroy/{expense}', [ExpenseController::class, 'destroy'])->name('destroy');
+});
 
+Route::middleware(['auth', 'verified'])->name('statistics.')->prefix('statistics')->group(function () {
+    Route::get('/daily-average', [StatisticsController::class, 'dailyAverage'])->name('dailyAverage');
+    Route::get('/category-totals', [StatisticsController::class, 'categoryTotals'])->name('categoryTotals');
+    Route::get('/statistics/daily', [StatisticsController::class, 'dailyChart'])->name('daily');
+
+});
+
+Route::middleware(['auth', 'verified'])->name('user-settings.')->prefix('user-settings')->group(function () {
+    Route::get('/profile', [StatisticsController::class, 'profile'])->name('profile');
+    Route::put('/profile', [StatisticsController::class, 'update'])->name('update-profile');
+});
 require __DIR__ . '/auth.php';

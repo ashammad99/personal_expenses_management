@@ -63,4 +63,5 @@
             <!-- /.card -->
         </div>
     </div>
+    {{ $categories->links() }}
 @endsection

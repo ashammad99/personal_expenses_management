@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('expenses', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-/*
+            /*
  *  ->constrained()
  * $table->unsignedBigInteger('user_id');
 $table->foreign('user_id')->references('id')->on('users');
 $table->foreignId('author_id')->constrained('users'); // if column name isn't standard
 
  * */
-
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->decimal('amount', 10, 2);
+            $table->string('month');
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +34,6 @@ $table->foreignId('author_id')->constrained('users'); // if column name isn't st
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('expenses');
     }
 };

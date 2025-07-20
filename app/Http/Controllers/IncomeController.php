@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\Expense;
 use App\Models\Income;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,9 +11,25 @@ use Illuminate\Validation\Rule;
 
 class IncomeController extends Controller
 {
+    public function showExpensesForMonth(Income $income)
+    {
+        $month = $income->month;
+
+        $expenses = Auth::user()
+            ->expenses()
+            ->where('month', $month)
+            ->with('category')
+            ->get();
+
+        $totalExpenses = $expenses->sum('amount');
+
+        return view('incomes.expenses', compact('expenses', 'income', 'totalExpenses'));
+    }
     public function index()
     {
-        $incomes = Income::query()->where('user_id', '=', Auth::user()->id)->paginate();
+//        $incomes = Income::query()->where('user_id', '=', Auth::user()->id)->paginate();
+        $incomes = Auth::user()->incomes()->paginate();
+
         return view('incomes.list', compact('incomes'));
     }
 
@@ -63,9 +80,22 @@ class IncomeController extends Controller
         return view('incomes.edit',compact('income'));
     }
 
-    public function update()
+    public function update(Request $request,Income $income)
     {
-        dd("test");
+        if ($income->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+        $request->validate([
+            'income' => [
+                'required',
+                'numeric',
+                'min:0',
+            ],
+        ]);
+        $result = $income->update([
+            'income' => $request->input('income'),
+        ]);
+        return redirect()->route('incomes.show')->with('message', 'Income updated successfully!');
     }
 
     public function destroy()
